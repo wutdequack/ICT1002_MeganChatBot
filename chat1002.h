@@ -4,13 +4,13 @@
  * This file contains the definitions and function prototypes for all of
  * features of the ICT1002 chatbot.
  */
- 
+
 #ifndef _CHAT1002_H
 #define _CHAT1002_H
 
 #include <stdio.h>
 
-/* the maximum number of characters we expect in a line of input (including the terminating null)  */
+ /* the maximum number of characters we expect in a line of input (including the terminating null)  */
 #define MAX_INPUT    256
 
 /* the maximum number of characters allowed in the name of an intent (including the terminating null)  */
@@ -27,7 +27,19 @@
 #define KB_NOTFOUND -1
 #define KB_INVALID  -2
 #define KB_NOMEM    -3
- 
+
+/* data structures for intent and entities*/
+typedef struct {
+	char * intent_name;
+	struct node_struct *next;
+} IntentNode;
+
+typedef struct {
+	char ** entity_name;
+	char * answer;
+	struct node_struct *next;
+} EntityNode;
+
 /* functions defined in main.c */
 int compare_token(const char *token1, const char *token2);
 void prompt_user(char *buf, int n, const char *format, ...);

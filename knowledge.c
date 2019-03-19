@@ -11,32 +11,32 @@
  *
  * You may add helper functions as necessary.
  */
- 
+
 #include <stdlib.h>
-#include <stdio.h>
+#include <stdio.h>	
 #include <string.h>
 #include "chat1002.h"
 
-/*
- * Get the response to a question.
- *
- * Input:
- *   intent   - the question word
- *   entity   - the entity
- *   response - a buffer to receive the response
- *   n        - the maximum number of characters to write to the response buffer
- *
- * Returns:
- *   KB_OK, if a response was found for the intent and entity (the response is copied to the response buffer)
- *   KB_NOTFOUND, if no response could be found
- *   KB_INVALID, if 'intent' is not a recognised question word
- */
+ /*
+  * Get the response to a question.
+  *
+  * Input:
+  *   intent   - the question word
+  *   entity   - the entity
+  *   response - a buffer to receive the response
+  *   n        - the maximum number of characters to write to the response buffer
+  *
+  * Returns:
+  *   KB_OK, if a response was found for the intent and entity (the response is copied to the response buffer)
+  *   KB_NOTFOUND, if no response could be found
+  *   KB_INVALID, if 'intent' is not a recognised question word
+  */
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
-	
+
 	/* to be implemented */
-	
+
 	return KB_NOTFOUND;
-	
+
 }
 
 
@@ -56,11 +56,11 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
  *   KB_INVALID, if the intent is not a valid question word
  */
 int knowledge_put(const char *intent, const char *entity, const char *response) {
-	
+
 	/* to be implemented */
-	
+
 	return KB_INVALID;
-	
+
 }
 
 
@@ -73,9 +73,9 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE *f) {
-	
+
 	/* to be implemented */
-	
+
 	return 0;
 }
 
@@ -84,9 +84,9 @@ int knowledge_read(FILE *f) {
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-	
+
 	/* to be implemented */
-	
+
 }
 
 
@@ -97,7 +97,7 @@ void knowledge_reset() {
  *   f - the file
  */
 void knowledge_write(FILE *f) {
-	
+
 	/* to be implemented */
-	
+
 }
