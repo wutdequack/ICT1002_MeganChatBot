@@ -41,9 +41,11 @@
  */
 
 #define _CRT_SECURE_NO_WARNINGS
+#define SMALL_TALK_FILE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "chat1002.h"
 
 
@@ -92,8 +94,6 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
 	/* look for an intent and invoke the corresponding do_* function */
 	if (chatbot_is_exit(inv[0]))
 		return chatbot_do_exit(inc, inv, response, n);
-	else if (chatbot_is_smalltalk(inv[0]))
-		return chatbot_do_smalltalk(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
 		return chatbot_do_load(inc, inv, response, n);
 	else if (chatbot_is_question(inv[0]))
@@ -103,8 +103,7 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n);
 	else {
-		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
-		return 0;
+		return chatbot_do_smalltalk(inc, inv, response, n);
 	}
 
 }
@@ -224,6 +223,15 @@ int chatbot_is_question(const char *intent) {
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	
+	//create crafted response string
+	char * crafted_response = calloc(n, sizeof(char));
+
+	// check for heap overflow
+	if (crafted_response == NULL) {
+		printf("Out of memory.\n");
+		exit(1);
+	}
+
 	// create the entity object - array of strings
 	char ** entity = (char **) calloc(inc - 2, sizeof(char *));
 	
@@ -250,16 +258,17 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	int knowledge_return = knowledge_get(inv[1], entity, response, n);
 	switch (knowledge_return) {
 		case KB_NOTFOUND: //if cannot find intent
-			strcat(response, "I don't know."); //copy values to buffer
+			strcat(crafted_response, "I don't know."); //copy values to buffer
 			for (int i = 0; i < inc; i++) {
-				strcat(response, " ");
-				strcat(response, inv[i]);
+				strcat(crafted_response, " ");
+				strcat(crafted_response, inv[i]);
 			}
-			strcat(response, "?");
+			strcat(crafted_response, "?");
 			break;
 		default:
 			break;
 	}
+	snprintf(response, n, "%s", crafted_response); //put this to response
 	
 	return 0;
 
@@ -348,25 +357,6 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 }
 
 
-/*
- * Determine which an intent is smalltalk.
- *
- *
- * Input:
- *  intent - the intent
- *
- * Returns:
- *  1, if the intent is the first word of one of the smalltalk phrases
- *  0, otherwise
- */
-int chatbot_is_smalltalk(const char *intent) {
-
-	/* to be implemented */
-
-	return 0;
-
-}
-
 
 /*
  * Respond to smalltalk.
@@ -376,12 +366,171 @@ int chatbot_is_smalltalk(const char *intent) {
  *
  * Returns:
  *   0, if the chatbot should continue chatting
- *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
+ *   1, if the chatbot ran out of responses for some reason (and should theoretically never come here)
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
+	/* Initialize local variables to be used*/
+	int index_of_word; //index of word found in inv
+	int index_of_keyword; //index of hardcoded keyword
+	int * returnarray = calloc(2, sizeof(int)); //return array to retrieve position of indexes from findpos
+
+	if (returnarray == NULL) {
+		printf("Out of memory.\n");
+		exit(1);
+	}
+
+	//create crafted response string
+	char * crafted_response = calloc(n, sizeof(char));
+
+	// check for heap overflow
+	if (crafted_response == NULL) {
+		printf("Out of memory.\n");
+		exit(1);
+	}
+
+	/* create temp input to put to lowercase in order to match with chatbot words */
+	char ** temp_input = (char **)calloc(inc, sizeof(char *));
+
+	for (int word_index = 0; word_index < inc; word_index++) { //iterate through to put all to words to lower case
+		temp_input[word_index] = (char *)calloc(30, sizeof(char)); //allocate memory for individual strings (max value 30)
+		strncpy(temp_input[word_index], inv[word_index], sizeof(inv[word_index])); //copy inv value to temp_input
+		for (int char_index = 0; char_index < strlen(inv[word_index]); char_index++) {
+			temp_input[word_index][char_index] = tolower(temp_input[word_index][char_index]); //lowercase
+		}
+	}
+
+	memcpy(returnarray, findpos(inc, temp_input), sizeof(int)*2); //copy the results from findpos to return array
+	index_of_word = returnarray[0];
+	index_of_keyword = returnarray[1];
+
+	if (index_of_word != -1) { //found something
+		strncpy(crafted_response, responses[index_of_keyword][replycount[index_of_keyword] % responsesperkeyword[index_of_keyword]], n); // i forsee having to change n later
+		// copies the response based on keyword to crafted response
+
+		if (crafted_response[strlen(crafted_response) - 1] == '*') {
+			// strip * from the response
+			crafted_response[strcspn(crafted_response, "*")] = 0;
+
+			// swaps all other words with appropriate responses
+			for (int after_keyword = index_of_word + 1; after_keyword < inc; after_keyword++) { //iterate through rest of words
+				for (int swap_index = 0; swap_index < SWAP_TOTAL; swap_index++) { //iterate through swap list
+					if (strcmp(temp_input[after_keyword], swaps[swap_index][0]) == 0) {
+						temp_input[after_keyword] = (char *)swaps[swap_index][1]; //swap word
+					}
+				}
+				strcat(crafted_response, " ");
+				strcat(crafted_response, temp_input[after_keyword]); //formats and puts word into crafted response
+			}
+
+		}
+	}
+
+	snprintf(response, n, "%s", crafted_response); //put this to response
+
+	replycount[index_of_keyword]++; //increment to get a different response from same category
 
 	return 0;
 
+}
+
+
+/*
+ * Creates the arrays to be used in smalltalk
+ *
+ *	Input:
+ *  inc - number of strings
+ *	temp_input - input strings
+ *
+ * Returns:
+ *   int *, position of word and position of keyword
+ */
+int * findpos(int inc, char ** temp_input) {
+
+	//creates local variables for this function
+	int index_of_keyword = KEYWORDS_TOTAL - 1;
+	int index_of_word = -1;
+	int * returnarray = malloc(2 * sizeof(int));
+	if (returnarray == NULL) {
+		printf("Out of memory.\n");
+		exit(1);
+	}
+
+	returnarray[0] = index_of_word;
+	returnarray[0] = index_of_keyword;
+
+	for (int keyword_index = 0; keyword_index < KEYWORDS_TOTAL; keyword_index++) {
+		for (int word_index = 0; word_index < inc; word_index++) {
+
+			//create string to checked with for 2 words
+			char * two_chk_string = calloc(30, sizeof(char));
+
+			// check for heap overflow
+			if (two_chk_string == NULL) {
+				printf("Out of memory.\n");
+				exit(1);
+			}
+
+			//create string to checked with for 3 words
+			char * three_chk_string = calloc(30, sizeof(char));
+
+			// check for heap overflow
+			if (three_chk_string == NULL) {
+				printf("Out of memory.\n");
+				exit(1);
+			}
+
+			//if there can be phrase of 2 words formed, combine them together
+			int max_index_two = word_index + 2; //check if a phrase of 2 char from point of index will not exceed word array range
+			if (max_index_two < inc) {
+				strncpy(two_chk_string, temp_input[word_index], sizeof(temp_input[word_index]));
+				strcat(two_chk_string, " ");
+				strcat(two_chk_string, temp_input[word_index + 1]);
+			}
+
+			//if there can be phrase of 3 words formed, combine them together
+			int max_index_three = word_index + 3; //check if a phrase of 3 char from point of index will not exceed word array range
+			if (max_index_three < inc) {
+				strncpy(three_chk_string, temp_input[word_index], sizeof(temp_input[word_index]));
+				strcat(three_chk_string, " ");
+				strcat(three_chk_string, temp_input[word_index + 1]);
+				strcat(three_chk_string, " ");
+				strcat(three_chk_string, temp_input[word_index + 2]);
+			}
+
+			if (strcmp(three_chk_string, keywords[keyword_index]) == 0) { //if there are a list of 3 words in inv that matches a hardcoded keyword
+				returnarray[0] = max_index_three - 1; //set word index as a var, minus 1 to position it properly in array
+				returnarray[1] = keyword_index; //set keyword index as a var
+				return returnarray;
+			}
+			else if (strcmp(two_chk_string, keywords[keyword_index]) == 0) { //if there are a list of 2 words in inv that matches a hardcoded keyword
+				returnarray[0] = max_index_two - 1;
+				returnarray[1] = keyword_index;
+				return returnarray;
+			}
+			else if (strcmp(temp_input[word_index], keywords[keyword_index]) == 0) { //if there is a word in inv that matches a hardcoded keyword
+				returnarray[0] = word_index;
+				returnarray[1] = keyword_index;
+				return returnarray;
+			}
+		}
+	}
+
+	return returnarray;
+}
+
+/*
+ * Creates the arrays to be used in smalltalk
+ *
+ *
+ *
+ * Returns:
+ *   NULL
+ */
+void init_keywordcounters() {
+	replycount = calloc(KEYWORDS_TOTAL, sizeof(int)); //allocate memory for int *
+	if (replycount == NULL) { //if cannot allocate memory
+		printf("Out of Memory. Bye");
+		exit(1); //exit unhappily
+	}
 }

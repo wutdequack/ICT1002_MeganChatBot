@@ -35,6 +35,9 @@ int main(int argc, char *argv[]) {
 	inv[1] = NULL;
 	chatbot_do_reset(1, inv, output, MAX_RESPONSE);
 
+	/* start init of arrays used in small talk */
+	init_keywordcounters();
+
 	/* print a welcome message */
 	printf("%s: Hello, I'm %s.\n", chatbot_botname(), chatbot_botname());
 
