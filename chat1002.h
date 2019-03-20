@@ -29,16 +29,18 @@
 #define KB_NOMEM    -3
 
 /* data structures for intent and entities*/
-typedef struct {
+typedef struct intent_struct{
 	char * intent_name;
-	struct node_struct *next;
+	struct entity_struct *next;
 } IntentNode;
 
-typedef struct {
+typedef struct entity_struct{
 	char ** entity_name;
 	char * answer;
-	struct node_struct *next;
+	struct entity_struct *next;
 } EntityNode;
+
+IntentNode where_node = NULL;
 
 /* functions defined in main.c */
 int compare_token(const char *token1, const char *token2);
