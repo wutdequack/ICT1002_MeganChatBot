@@ -40,7 +40,9 @@ typedef struct entity_struct{
 	struct entity_struct *next;
 } EntityNode;
 
-IntentNode where_node = NULL;
+IntentNode where_node = {"Where", NULL};
+IntentNode who_node = {"Who", NULL};
+IntentNode what_node = {"What", NULL};
 
 /* functions defined in main.c */
 int compare_token(const char *token1, const char *token2);
