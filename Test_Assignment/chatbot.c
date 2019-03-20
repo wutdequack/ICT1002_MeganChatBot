@@ -394,7 +394,7 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 
 	for (int word_index = 0; word_index < inc; word_index++) { //iterate through to put all to words to lower case
 		temp_input[word_index] = (char *)calloc(30, sizeof(char)); //allocate memory for individual strings (max value 30)
-		strncpy(temp_input[word_index], inv[word_index], sizeof(inv[word_index])); //copy inv value to temp_input
+		strncpy(temp_input[word_index], inv[word_index], 30); //copy inv value to temp_input
 		for (int char_index = 0; char_index < strlen(inv[word_index]); char_index++) {
 			temp_input[word_index][char_index] = tolower(temp_input[word_index][char_index]); //lowercase
 		}
