@@ -6,6 +6,7 @@
  * You should not need to modify this file. You may invoke its functions if you like, however.
  */
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
