@@ -12,6 +12,9 @@
  * You may add helper functions as necessary.
  */
 
+#define KNOWLEDGE_NODES
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <stdio.h>	
 #include <string.h>
@@ -112,15 +115,33 @@ void knowledge_write(FILE *f) {
 void init_intentnodes() {
 
 	//init of where intent
-	memcpy(where_intent->intent_name, "Where", sizeof("Where"));
+	where_intent = (IntentNode *) malloc(sizeof(IntentNode));
+	if (where_intent == NULL) { //if memory not enough
+		printf("Memory is full.");
+		exit(1);
+	}
+	where_intent->intent_name = calloc(6, sizeof(char)); //got to malloc the string pointer first 
+	strncpy(where_intent->intent_name, "Where", sizeof(char)*6);
 	where_intent->next = NULL;
 
 	//init of what intent
-	memcpy(what_intent->intent_name, "What", sizeof("What"));
+	what_intent = (IntentNode *)malloc(sizeof(IntentNode));
+	if (what_intent == NULL) { //if memory not enough
+		printf("Memory is full.");
+		exit(1);
+	}
+	what_intent->intent_name = calloc(5, sizeof(char)); //got to malloc the string pointer first 
+	strncpy(what_intent->intent_name, "What", sizeof(char)*5);
 	what_intent->next = NULL;
 
 	//init of who intent
-	memcpy(who_intent->intent_name, "Who", sizeof("Who"));
+	who_intent = (IntentNode *)malloc(sizeof(IntentNode));
+	if (who_intent == NULL) { //if memory not enough
+		printf("Memory is full.");
+		exit(1);
+	}
+	who_intent->intent_name = calloc(4, sizeof(char)); //got to malloc the string pointer first 
+	strncpy(who_intent->intent_name, "Who", sizeof(char)*4);
 	who_intent->next = NULL;
 
 }

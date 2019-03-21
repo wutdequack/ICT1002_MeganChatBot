@@ -44,9 +44,11 @@ typedef struct {
 	struct node_struct *next;
 } EntityNode;
 
-IntentNode * where_intent = NULL;
-IntentNode * what_intent = NULL;
-IntentNode * who_intent = NULL;
+#ifdef KNOWLEDGE_NODES
+IntentNode * where_intent;
+IntentNode * what_intent;
+IntentNode * who_intent;
+#endif
 
 /*constant global variables for small talk*/
 #ifdef SMALL_TALK_FILE
@@ -56,7 +58,7 @@ const char *keywords[] = {
 	   "i am","i'm","you","how","when", //13-17
 	   "why","name","cause","sorry","dream","hello","hi", //18-24
 	   "maybe","no","your","always","think","alike","yes", //25-31
-	   "friend","computer","car","nokeyfound" }; //32-35
+	   "friend","computer","cars","nokeyfound" }; //32-35
 
 const char *responses[KEYWORDS_TOTAL][9] = {
 	{   "do you really believe i don't*",
