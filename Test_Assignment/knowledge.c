@@ -101,3 +101,26 @@ void knowledge_write(FILE *f) {
 	/* to be implemented */
 
 }
+
+
+/*
+ * Creation of global intent nodes
+ *
+ * Returns:
+ *	NULL
+ */
+void init_intentnodes() {
+
+	//init of where intent
+	memcpy(where_intent->intent_name, "Where", sizeof("Where"));
+	where_intent->next = NULL;
+
+	//init of what intent
+	memcpy(what_intent->intent_name, "What", sizeof("What"));
+	what_intent->next = NULL;
+
+	//init of who intent
+	memcpy(who_intent->intent_name, "Who", sizeof("Who"));
+	who_intent->next = NULL;
+
+}

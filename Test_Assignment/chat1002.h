@@ -44,6 +44,10 @@ typedef struct {
 	struct node_struct *next;
 } EntityNode;
 
+IntentNode * where_intent = NULL;
+IntentNode * what_intent = NULL;
+IntentNode * who_intent = NULL;
+
 /*constant global variables for small talk*/
 #ifdef SMALL_TALK_FILE
 const char *keywords[] = {
@@ -264,5 +268,6 @@ int knowledge_put(const char *intent, const char *entity, const char *response);
 void knowledge_reset();
 int knowledge_read(FILE *f);
 void knowledge_write(FILE *f);
+void init_intentnodes();
 
 #endif

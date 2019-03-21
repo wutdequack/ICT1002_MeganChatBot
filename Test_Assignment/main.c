@@ -38,6 +38,9 @@ int main(int argc, char *argv[]) {
 	/* start init of arrays used in small talk */
 	init_keywordcounters();
 
+	/* start init of intent nodes */
+	init_intentnodes();
+
 	/* print a welcome message */
 	printf("%s: Hello, I'm %s.\n", chatbot_botname(), chatbot_botname());
 
