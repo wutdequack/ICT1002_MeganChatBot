@@ -404,27 +404,26 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 	index_of_word = returnarray[0];
 	index_of_keyword = returnarray[1];
 
-	if (index_of_word != -1) { //found something
-		strncpy(crafted_response, responses[index_of_keyword][replycount[index_of_keyword] % responsesperkeyword[index_of_keyword]], n); // i forsee having to change n later
-		// copies the response based on keyword to crafted response
+	strncpy(crafted_response, responses[index_of_keyword][replycount[index_of_keyword] % responsesperkeyword[index_of_keyword]], n);
+	// copies the response based on keyword to crafted response
 
-		if (crafted_response[strlen(crafted_response) - 1] == '*') {
-			// strip * from the response
-			crafted_response[strcspn(crafted_response, "*")] = 0;
+	if (crafted_response[strlen(crafted_response) - 1] == '*') {
+		// strip * from the response
+		crafted_response[strcspn(crafted_response, "*")] = 0;
 
-			// swaps all other words with appropriate responses
-			for (int after_keyword = index_of_word + 1; after_keyword < inc; after_keyword++) { //iterate through rest of words
-				for (int swap_index = 0; swap_index < SWAP_TOTAL; swap_index++) { //iterate through swap list
-					if (strcmp(temp_input[after_keyword], swaps[swap_index][0]) == 0) {
-						temp_input[after_keyword] = (char *)swaps[swap_index][1]; //swap word
-					}
+		// swaps all other words with appropriate responses
+		for (int after_keyword = index_of_word + 1; after_keyword < inc; after_keyword++) { //iterate through rest of words
+			for (int swap_index = 0; swap_index < SWAP_TOTAL; swap_index++) { //iterate through swap list
+				if (strcmp(temp_input[after_keyword], swaps[swap_index][0]) == 0) {
+					temp_input[after_keyword] = (char *)swaps[swap_index][1]; //swap word
 				}
-				strcat(crafted_response, " ");
-				strcat(crafted_response, temp_input[after_keyword]); //formats and puts word into crafted response
 			}
-
+			strcat(crafted_response, " ");
+			strcat(crafted_response, temp_input[after_keyword]); //formats and puts word into crafted response
 		}
+
 	}
+	
 
 	snprintf(response, n, "%s", crafted_response); //put this to response
 
@@ -457,7 +456,7 @@ int * findpos(int inc, char ** temp_input) {
 	}
 
 	returnarray[0] = index_of_word;
-	returnarray[0] = index_of_keyword;
+	returnarray[1] = index_of_keyword;
 
 	for (int keyword_index = 0; keyword_index < KEYWORDS_TOTAL; keyword_index++) {
 		for (int word_index = 0; word_index < inc; word_index++) {
