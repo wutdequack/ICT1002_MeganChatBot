@@ -265,7 +265,7 @@ int * findpos(int inc, char ** temp_input);
 void init_keywordcounters();
 
 /* functions defined in knowledge.c */
-int knowledge_get(const char *intent, const char *entity, char *response, int n);
+int knowledge_get(const char *intent, char **entity, char *response, int n);
 int knowledge_put(const char *intent, const char *entity, const char *response);
 void knowledge_reset();
 int knowledge_read(FILE *f);

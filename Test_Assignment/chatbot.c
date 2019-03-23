@@ -244,6 +244,8 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	//check if second word is 'is'/'are'
 	if (inv[1] == "is" || inv[1] || "are") {
 		for (int i = 0; i < inc-2; i++) { //taking all the values after entity [is]
+
+
 			int length_of_str = strlen(inv[i + 2]) + 1; 
 			entity[i] = (char *)calloc(length_of_str, sizeof(char)); //allocate memory for individual strings
 			if (entity[i] == NULL) { //check for heap overflow
@@ -255,6 +257,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	}
 
 	//gets return value from knowledge bank
+//	printf("ORiginal entity: %s\n",entity[0]);
 	int knowledge_return = knowledge_get(inv[1], entity, response, n);
 	switch (knowledge_return) {
 		case KB_NOTFOUND: //if cannot find intent
