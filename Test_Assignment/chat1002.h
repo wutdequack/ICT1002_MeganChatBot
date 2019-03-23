@@ -39,7 +39,7 @@ typedef struct {
 } IntentNode;
 
 typedef struct {
-	char ** entity_name;
+	char * entity_name;
 	char * answer;
 	struct node_struct *next;
 } EntityNode;
