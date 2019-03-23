@@ -34,12 +34,12 @@
   *   KB_NOTFOUND, if no response could be found
   *   KB_INVALID, if 'intent' is not a recognised question word
   */
-int knowledge_get(const char *intent, char **entity, char *response, int n) {
+int knowledge_get(const char *intent, char *entity, char *response, int n) {
 
 	/* to be implemented */
 
 //	printf("%s\n",intent);
-//	printf("%s",entity[0]);
+//	printf("%s",entity);
 //
 
 	return KB_NOTFOUND;
