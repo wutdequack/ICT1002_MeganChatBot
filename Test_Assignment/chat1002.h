@@ -33,16 +33,17 @@
 #define KEYWORDS_TOTAL 35
 
 /* data structures for intent and entities*/
-typedef struct {
-	char * intent_name;
-	struct node_struct *next;
-} IntentNode;
 
 typedef struct {
 	char * entity_name;
 	char * answer;
 	struct node_struct *next;
 } EntityNode;
+
+typedef struct {
+    char * intent_name;
+    EntityNode *next;
+} IntentNode;
 
 #ifdef KNOWLEDGE_NODES
 IntentNode * where_intent;
