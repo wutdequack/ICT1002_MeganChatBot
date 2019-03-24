@@ -329,7 +329,7 @@ EntityNode *Entity_insert_at_tail(EntityNode *head, EntityNode *new_node) {
     while (temp->next != NULL) {
         temp = temp->next;
     }
-    printf("NEW DERE: %s", new_node->entity_name);
+
     temp->next = new_node;
     return head;
 }
