@@ -289,7 +289,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
                     strcat(response_temp, inv[i]);
                 }
                 strcat(response_temp, "?");
-				printf(response_temp);
+				printf("%s",response_temp);
 
 
 
