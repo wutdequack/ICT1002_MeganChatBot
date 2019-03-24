@@ -34,7 +34,7 @@
 
 /* data structures for intent and entities*/
 
-typedef struct {
+typedef struct node_struct{
 	char * entity_name;
 	char * answer;
 	struct node_struct *next;
@@ -272,5 +272,7 @@ void knowledge_reset();
 int knowledge_read(FILE *f);
 void knowledge_write(FILE *f);
 void init_intentnodes();
-
+EntityNode *Entitysearch_list(EntityNode *head, char *target);
+EntityNode *EntityCreate_node(char* entity, char* ans);
+EntityNode *Entity_insert_at_tail(EntityNode *head, EntityNode *new_node);
 #endif

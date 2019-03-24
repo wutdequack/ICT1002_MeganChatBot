@@ -96,8 +96,12 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
 		return chatbot_do_exit(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
 		return chatbot_do_load(inc, inv, response, n);
-	else if (chatbot_is_question(inv[0]))
-		return chatbot_do_question(inc, inv, response, n);
+	else if (chatbot_is_question(inv[0])){
+
+		int x = chatbot_do_question(inc, inv, response, n);
+		return x;
+	}
+
 	else if (chatbot_is_reset(inv[0]))
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
@@ -246,61 +250,69 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	//check if second word is 'is'/'are'
 
 
-	if (strcmp(inv[1],"is")==0 || strcmp(inv[1],"are")==0) {
-
-//		printf("is/are works");
-
-		for (int i = 0; i < inc-2; i++) { //taking all the values after entity [is]
+	if (compare_token(inv[1],"is")==0 || compare_token(inv[1],"are")==0) {
 
 
-			int length_of_str = strlen(inv[i + 2]) + 1;
-			entity[i] = (char *)calloc(length_of_str, sizeof(char)); //allocate memory for individual strings
-			if (entity[i] == NULL) { //check for heap overflow
-				printf("Out of memory.\n");
-				exit(1);
-			}
 
-			len_sentence = len_sentence+strlen(inv[i + 2])+1;// adding 1 to the end to take in account of spaces
+        for (int i = 0; i < inc - 2; i++) { //taking all the values after entity [is]
+
+
+            int length_of_str = strlen(inv[i + 2]) + 1;
+            entity[i] = (char *) calloc(length_of_str, sizeof(char)); //allocate memory for individual strings
+            if (entity[i] == NULL) { //check for heap overflow
+                printf("Out of memory.\n");
+                exit(1);
+            }
+
+            len_sentence = len_sentence + strlen(inv[i + 2]) + 1;// adding 1 to the end to take in account of spaces
             array_size++;
-			strncpy(entity[i], inv[i+2], length_of_str); //copy value from user input to entity
-		}
+            strncpy(entity[i], inv[i + 2], length_of_str); //copy value from user input to entity
+        }
+
+
+        char *f_entity = (char *) calloc(len_sentence, sizeof(char));
+
+        for (int j = 0; j < array_size; ++j) {
+
+            strcat(f_entity, entity[j]);
+            strcat(f_entity, " ");
+        }
+        f_entity[len_sentence] = '\0';
+        f_entity[len_sentence - 1] = '\0';
+
+
+        //gets return value from knowledge bank
+        int knowledge_return = knowledge_get(inv[0], f_entity, response, n);
+        switch (knowledge_return) {
+            case KB_NOTFOUND: //if cannot find intent
+                strcat(crafted_response, "I don't know."); //copy values to buffer
+                for (int i = 0; i < inc; i++) {
+                    strcat(crafted_response, " ");
+                    strcat(crafted_response, inv[i]);
+                }
+                strcat(crafted_response, "?");
+				snprintf(response, n, "%s", crafted_response); //put this to response
+
+				char user_response[MAX_INPUT];
+				fgets(user_response, MAX_INPUT, stdin);
+
+
+                break;
+			case KB_OK:
+
+
+            default:
+                break;
+        }
+
+        return 0;
+    }else{
+		strcat(crafted_response, "Please include is/are"); //copy values to buffer
+		snprintf(response, n, "%s", crafted_response); //put this to response
+
+		return 0;
 	}
 
-
-
-    char *f_entity = (char *)calloc(len_sentence, sizeof(char));
-
-    for (int j = 0; j < array_size; ++j) {
-
-		strcat(f_entity,entity[j]);
-		strcat(f_entity," ");
-    }
-    f_entity[len_sentence]='\0';
-    f_entity[len_sentence-1]='\0';
-
-//	printf("\nLenthg of sentence: %d",len_sentence);
-//    printf("\nF entity dat: %d", strlen(f_entity));
-//    printf("\nF entity dat: %s", (f_entity));
-
-
-	//gets return value from knowledge bank
-//	printf("ORiginal entity: %s\n",entity[0]);
-	int knowledge_return = knowledge_get(inv[1], f_entity, response, n);
-	switch (knowledge_return) {
-		case KB_NOTFOUND: //if cannot find intent
-			strcat(crafted_response, "I don't know."); //copy values to buffer
-			for (int i = 0; i < inc; i++) {
-				strcat(crafted_response, " ");
-				strcat(crafted_response, inv[i]);
-			}
-			strcat(crafted_response, "?");
-			break;
-		default:
-			break;
-	}
-	snprintf(response, n, "%s", crafted_response); //put this to response
-	
-	return 0;
 
 }
 
