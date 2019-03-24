@@ -229,7 +229,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	
 	//create crafted response string
 	char * crafted_response = calloc(n, sizeof(char));
-
+    char * response_temp = calloc(n, sizeof(char));
 	// check for heap overflow
 	if (crafted_response == NULL) {
 		printf("Out of memory.\n");
@@ -281,23 +281,31 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
         f_entity[len_sentence - 1] = '\0';
 
 
+
+
         //gets return value from knowledge bank
         int knowledge_return = knowledge_get(inv[0], f_entity, response, n);
         switch (knowledge_return) {
             case KB_NOTFOUND: //if cannot find intent
-                strcat(crafted_response, "I don't know."); //copy values to buffer
+                strcat(response_temp, chatbot_botname());
+                strcat(response_temp, ": I don't know."); //copy values to buffer
                 for (int i = 0; i < inc; i++) {
-                    strcat(crafted_response, " ");
-                    strcat(crafted_response, inv[i]);
+                    strcat(response_temp, " ");
+                    strcat(response_temp, inv[i]);
                 }
-                strcat(crafted_response, "?");
-				snprintf(response, n, "%s", crafted_response); //put this to response
-
-				char user_response[MAX_INPUT];
-				fgets(user_response, MAX_INPUT, stdin);
+                strcat(response_temp, "?");
+				printf(response_temp);
 
 
-                break;
+
+              int kout = knowledge_put(inv[0],f_entity,response,n);
+
+                strcat(crafted_response, "Thank you"); //copy values to buffer
+                snprintf(response, n, "%s", crafted_response);
+                return kout;
+
+
+
 			case KB_OK:
 
 

@@ -125,7 +125,7 @@ void prompt_user(char *buf, int n, const char *format, ...) {
 	/* print the prompt */
 	va_list args;
 	va_start(args, format);
-	printf("%s: ", chatbot_botname());
+//	printf("%s: ", chatbot_botname());
 	vprintf(format, args);
 	printf(" ");
 	va_end(args);

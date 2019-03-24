@@ -39,7 +39,9 @@ int knowledge_get(const char *intent, char *entity, char *response, int n) {
 
 
     if (compare_token(intent, "where") == 0) {
-        char * crafted_response = calloc(n, sizeof(char));
+
+
+        char *crafted_response = calloc(n, sizeof(char));
 
         if (where_intent->next != NULL) {
 
@@ -47,36 +49,81 @@ int knowledge_get(const char *intent, char *entity, char *response, int n) {
 
             head = Entitysearch_list(head, entity);
 
-            if(head!=NULL){
+            if (head != NULL) {
 
                 strcat(crafted_response, head->answer);
-                snprintf(response, n, "%s",crafted_response);
+                snprintf(response, n, "%s", crafted_response);
                 return KB_OK;
 
-            }else{
+            } else {
                 return KB_NOTFOUND;
             }
 
 
-
-
         } else {
-            printf("\nKB NULL\n");
-            return KB_INVALID;
+//
+            return KB_NOTFOUND;
         }
 
 
     } else if (compare_token(intent, "what") == 0) {
-        printf("\nwhat runn");
+
+
+        char *crafted_response = calloc(n, sizeof(char));
+
+        if (what_intent->next != NULL) {
+
+            EntityNode *head = what_intent->next;
+
+            head = Entitysearch_list(head, entity);
+
+            if (head != NULL) {
+
+                strcat(crafted_response, head->answer);
+                snprintf(response, n, "%s", crafted_response);
+                return KB_OK;
+
+            } else {
+                return KB_NOTFOUND;
+            }
+
+
+        } else {
+//
+            return KB_NOTFOUND;
+        }
+
 
     } else if (compare_token(intent, "who") == 0) {
-        printf("\nwho runn");
+        char *crafted_response = calloc(n, sizeof(char));
+
+        if (who_intent->next != NULL) {
+
+            EntityNode *head = who_intent->next;
+
+            head = Entitysearch_list(head, entity);
+
+            if (head != NULL) {
+
+                strcat(crafted_response, head->answer);
+                snprintf(response, n, "%s", crafted_response);
+                return KB_OK;
+
+            } else {
+                return KB_NOTFOUND;
+            }
+
+
+        } else {
+//
+            return KB_NOTFOUND;
+        }
+
+
     } else {
         return KB_INVALID;
     }
 
-
-    return KB_NOTFOUND;
 
 }
 
@@ -96,14 +143,53 @@ int knowledge_get(const char *intent, char *entity, char *response, int n) {
  *   KB_NOMEM, if there was a memory allocation failure
  *   KB_INVALID, if the intent is not a valid question word
  */
-int knowledge_put(const char *intent, const char *entity, const char *response) {
+int knowledge_put(const char *intent, const char *entity, const char *response, int n) {
 
     /* to be implemented */
 
 
 
+    char user_response[MAX_INPUT];
 
-    return KB_INVALID;
+    prompt_user(user_response, n, "");
+
+    char *tempChar = calloc(strlen(user_response) + 1, sizeof(char));
+    strncpy(tempChar, user_response, sizeof(char) * strlen(user_response) + 1);
+
+
+    if (compare_token(intent, "where") == 0) {
+
+        EntityNode *head = EntityCreate_node((char *) entity, tempChar);
+
+        if (where_intent->next == NULL) {
+            where_intent->next = head;
+        } else {
+            Entity_insert_at_tail(where_intent->next, head);
+        }
+        return KB_OK;
+    } else if (compare_token(intent, "what") == 0) {
+        EntityNode *head = EntityCreate_node((char *) entity, tempChar);
+
+        if (what_intent->next == NULL) {
+            what_intent->next = head;
+        } else {
+            Entity_insert_at_tail(what_intent->next, head);
+        }
+
+        return KB_OK;
+    } else if (compare_token(intent, "who") == 0) {
+        EntityNode *head = EntityCreate_node((char *) entity, tempChar);
+
+        if (who_intent->next == NULL) {
+            who_intent->next = head;
+        } else {
+            Entity_insert_at_tail(who_intent->next, head);
+        }
+        return KB_OK;
+    } else {
+        return KB_INVALID;
+    }
+
 
 }
 
@@ -186,16 +272,18 @@ void init_intentnodes() {
     who_intent->next = NULL;
 
 // testing purpose only
+/*
     EntityNode *cHead = NULL;
 
-    EntityNode *where_entity = EntityCreate_node("sit","it is at dover");
-    EntityNode *where_entity2 = EntityCreate_node("nyp","it is at yishun");
+    EntityNode *where_entity = EntityCreate_node("sit", "it is at dover");
+    EntityNode *where_entity2 = EntityCreate_node("nyp", "it is at yishun");
 
     where_intent->next = where_entity;
 
     cHead = where_intent->next;
 
-    cHead = Entity_insert_at_tail(cHead,where_entity2);
+    cHead = Entity_insert_at_tail(cHead, where_entity2);
+*/
 
 }
 
@@ -209,8 +297,11 @@ void init_intentnodes() {
 
 EntityNode *Entitysearch_list(EntityNode *head, char *target) {
     EntityNode *temp = head;
-    while (temp != NULL && compare_token(temp->entity_name, target) != 0)
+    while (temp != NULL && compare_token(temp->entity_name, target) != 0) {
         temp = temp->next;
+    }
+
+//
     return temp;
 }
 
@@ -223,7 +314,7 @@ EntityNode *EntityCreate_node(char *entity, char *ans) {
 
         strncpy(new_node->entity_name, entity, sizeof(char) * strlen(entity) + 1);
         strncpy(new_node->answer, ans, sizeof(char) * strlen(ans) + 1);
-        new_node->next=NULL;
+        new_node->next = NULL;
     }
     return new_node;
 }
@@ -235,10 +326,10 @@ EntityNode *Entity_insert_at_tail(EntityNode *head, EntityNode *new_node) {
     EntityNode *temp = head;
 
 
-    while (temp->next != NULL){
+    while (temp->next != NULL) {
         temp = temp->next;
     }
-
+    printf("NEW DERE: %s", new_node->entity_name);
     temp->next = new_node;
     return head;
 }

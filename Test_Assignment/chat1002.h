@@ -267,7 +267,7 @@ void init_keywordcounters();
 
 /* functions defined in knowledge.c */
 int knowledge_get(const char *intent, char *entity, char *response, int n);
-int knowledge_put(const char *intent, const char *entity, const char *response);
+int knowledge_put(const char *intent, const char *entity, const char *response,int n);
 void knowledge_reset();
 int knowledge_read(FILE *f);
 void knowledge_write(FILE *f);
