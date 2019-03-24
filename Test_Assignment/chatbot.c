@@ -90,18 +90,13 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
 		snprintf(response, n, "");
 		return 0;
 	}
-
 	/* look for an intent and invoke the corresponding do_* function */
 	if (chatbot_is_exit(inv[0]))
 		return chatbot_do_exit(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
 		return chatbot_do_load(inc, inv, response, n);
-	else if (chatbot_is_question(inv[0])){
-
-		int x = chatbot_do_question(inc, inv, response, n);
-		return x;
-	}
-
+	else if (chatbot_is_question(inv[0]))
+        return  chatbot_do_question(inc, inv, response, n);
 	else if (chatbot_is_reset(inv[0]))
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
