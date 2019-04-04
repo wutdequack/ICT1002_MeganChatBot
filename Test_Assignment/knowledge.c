@@ -230,6 +230,47 @@ void knowledge_write(FILE *f) {
 
     /* to be implemented */
 
+	// What Intent List
+	IntentNode *intent1 = what_intent;
+	fprintf(f, "[%s]\n", intent1->intent_name);
+
+	EntityNode *entity1 = what_intent->next;
+	while (entity1 != NULL) {
+		fprintf(f, entity1->entity_name);
+		fprintf(f, "=");
+		fprintf(f, entity1->answer);
+		fprintf(f, "\n");
+		entity1 = entity1->next;
+	}
+	fprintf(f, "\n");
+
+	// Where Intent List
+	IntentNode *intent2 = where_intent;
+	fprintf(f, "[%s]\n", intent2->intent_name);
+
+	EntityNode *entity2 = where_intent->next;
+	while (entity2 != NULL) {
+		fprintf(f, entity2->entity_name);
+		fprintf(f, "=");
+		fprintf(f, entity2->answer);
+		fprintf(f, "\n");
+		entity2 = entity2->next;
+	}
+	fprintf(f, "\n");
+
+	// Who Intent List
+	IntentNode *intent3 = who_intent;
+	fprintf(f, "[%s]\n", intent3->intent_name);
+
+	EntityNode *entity3 = who_intent->next;
+	while (entity3 != NULL) {
+		fprintf(f, entity3->entity_name);
+		fprintf(f, "=");
+		fprintf(f, entity3->answer);
+		fprintf(f, "\n");
+		entity3 = entity3->next;
+	}
+	fprintf(f, "\n");
 }
 
 

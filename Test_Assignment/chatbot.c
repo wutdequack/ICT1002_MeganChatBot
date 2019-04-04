@@ -42,6 +42,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #define SMALL_TALK_FILE
+#define KNOWLEDGE_NODES
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -395,10 +396,27 @@ int chatbot_is_save(const char *intent) {
  */
 int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 
+	// int inc = number of words in user input = FILENAME
+	// char *inv[] = pointers to the beginning of each word of input = pointer to FILENAME
+	// char *response = buffer to receive the response = for printing out result
+	// int n = the maximum number of characters to write to the response buffer
+
 	/* to be implemented */
+	char filename[MAX_INPUT];
+	FILE * f;
 
+	strcpy(filename, inv[2]);
+
+	f = fopen(filename, "w");
+	if (f == NULL) {
+		printf("Unable to open file.\n");
+		return 0;
+	}
+
+	knowledge_write(f);
+	printf("My knowledge has been saved to %s\n", filename);
+	fclose(f);
 	return 0;
-
 }
 
 
