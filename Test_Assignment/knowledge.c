@@ -338,8 +338,15 @@ void init_intentnodes() {
 
 EntityNode *Entitysearch_list(EntityNode *head, char *target) {
     EntityNode *temp = head;
-    while (temp != NULL && compare_token(temp->entity_name, target) != 0) {
-        temp = temp->next;
+    while (temp != NULL) { //while head not null
+		if (temp->entity_name != NULL) {
+			if (compare_token(temp->entity_name, target) != 0) { //while the value of the not-null temp is not the same
+				temp = temp->next; //iterate through linked list
+			}
+			else {
+				break; // break the loop if match 
+			}
+		}
     }
 
 //

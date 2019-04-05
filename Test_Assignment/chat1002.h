@@ -54,7 +54,7 @@ IntentNode * who_intent;
 /*constant global variables for small talk*/
 #ifdef SMALL_TALK_FILE
 const char *keywords[] = {
-	   "why dont you", "why can't i", "my name is", "can you","can i","you are", //1-6
+	   "why don't you", "why can't i", "my name is", "can you","can i","you are", //1-6
 	   "you're","i don't","i feel", "are you","i can't","i want", //7-12
 	   "i am","i'm","you","how","when", //13-17
 	   "why","name","cause","sorry","dream","hello","hi", //18-24

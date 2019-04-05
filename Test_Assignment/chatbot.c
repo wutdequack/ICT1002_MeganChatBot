@@ -356,6 +356,65 @@ int chatbot_is_reset(const char *intent) {
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
 
 	/* to be implemented */
+	if (where_intent != NULL) {
+		if (where_intent->next != NULL) {
+			EntityNode *head = where_intent->next;
+			EntityNode *temp = head;
+			printf("resetting where\n");
+			while (temp != NULL) {
+				temp = temp->next;
+				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
+				free(head->entity_name);
+				free(head->answer);
+				free(head);
+				head = temp;
+
+			}
+			where_intent->next = NULL;
+		}
+
+	}
+	/* Checks if user has asked any what questions and frees all the questions and answers */
+	if (what_intent != NULL) {
+		if (what_intent->next != NULL) {
+			EntityNode *head = what_intent->next;
+			EntityNode *temp = head;
+			printf("resetting what\n");
+			while (head != NULL) {
+				temp = temp->next;
+				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
+				free(head->entity_name);
+				free(head->answer);
+				free(head);
+				head = temp;
+			}
+			what_intent->next = NULL;
+		}
+
+	}
+	/* Checks if user has asked any who questions and frees all the questions and answers */
+	if (who_intent != NULL) {
+		if (who_intent->next != NULL) {
+			EntityNode *head = who_intent->next;
+			EntityNode *temp = head;
+			printf("resetting who\n");
+			while (temp != NULL) {
+				temp = temp->next;
+				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
+				free(head->entity_name);
+				free(head->answer);
+				free(head);
+				head = temp;
+			}
+			who_intent->next = NULL;
+		}
+
+	}
+
+
+	// Return print statement
+	snprintf(response, n, "%s resetted!", chatbot_botname());
+
 
 	return 0;
 
