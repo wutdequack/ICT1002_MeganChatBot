@@ -404,17 +404,21 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 	/* to be implemented */
 	char filename[MAX_INPUT];
 	FILE * f;
-
-	strcpy(filename, inv[2]);
+	
+	if (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0) {
+		strcpy(filename, inv[2]);
+	} else {
+		strcpy(filename, inv[1]);
+	}
 
 	f = fopen(filename, "w");
 	if (f == NULL) {
-		printf("Unable to open file.\n");
+		snprintf(response, n, "Error opening file");
 		return 0;
 	}
 
 	knowledge_write(f);
-	printf("My knowledge has been saved to %s\n", filename);
+	snprintf(response, n, "My knowledge has been saved to %s\n", filename);
 	fclose(f);
 	return 0;
 }
