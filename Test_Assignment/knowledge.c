@@ -232,25 +232,19 @@ int knowledge_read(FILE *f) {
 				ERROR_FLAG = 0;
 			}
 		}
-
-		if (strcmp("", line) == 0) {// Check if
+		if (strcmp("", line) == 0) {// Check if its a blank line
 			ERROR_FLAG = 0;
 		}
 		else {
-
 			if (ERROR_FLAG == 1) {// Check if ERROR_FLAG is 1 (if delimiter does not exist in line)
 				return -1; // Returns -1 (num_of_lines in chatbot.c)
 			}
+			// Separate line by the delimiter '='
+			tokens[0] = strtok(line, delim);// Get first part of split string
+			tokens[1] = strtok(NULL, delim);// Get second part of split string
 
-			tokens[0] = strtok(line, delim);// Separate line by the delimiter '='
-			tokens[1] = strtok(NULL, delim);
-
-			if ((tokens[0] != NULL) && (tokens[1] != NULL)) {
-				if (!(strcmp(" ", tokens[0]) == 0 || strcmp(" ", tokens[1]) == 0)) {// If its a line with "="
-
-				//if ((strcmp(" ", name) == 0) || (name == null) || (strcmp(" ", value) == 0) || (value == null)) {// check if there are invalid names/values
-				//	return -1;// returns -1 (num_of_lines in chatbot.c)
-				//}
+			if ((tokens[0] != NULL) && (tokens[1] != NULL)) {// If there is a name/value that is NULL
+				if (!(strcmp(" ", tokens[0]) == 0 || strcmp(" ", tokens[1]) == 0)) {// If there is a blank name/value
 
 					strcpy(name, tokens[0]);// Copy first part of string as name
 					strcpy(value, tokens[1]);// Copy second part of string as value
@@ -287,17 +281,14 @@ int knowledge_read(FILE *f) {
 					}
 				}
 				else {
-					return -1;
+					return -1;// Return -1 (num_of_lines in chatbot.c)
 				}
 			}
 			else {
-				return -1;
+				return -1;// Return -1 (num_of_lines in chatbot.c)
 			}
-
-
 		}
 	}
-
     return linecount;
 }
 

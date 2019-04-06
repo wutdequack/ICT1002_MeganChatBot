@@ -178,20 +178,18 @@ int chatbot_is_load(const char *intent) {
  */
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
-
 	FILE* fptr;
 	int num_of_lines = 0;
 	
-	if ((fptr = fopen(inv[1], "r")) == NULL) {
+	if ((fptr = fopen(inv[1], "r")) == NULL) {// If input file cannot be NULL
 		snprintf(response, n, "%s not found. Please try again!", inv[1]);
 	}
-	else { //if file can be found
+	else { // If file can be found
 		num_of_lines = knowledge_read(fptr);
-		if (num_of_lines == -1) {
+		if (num_of_lines == -1) {// If there are invalid input in file
 			snprintf(response, n, "Invalid file.");
 		}
-		else {
+		else {// Valid input in files
 			snprintf(response, n, "Read %d responses from %s", num_of_lines, inv[1]);
 		}
 	}
