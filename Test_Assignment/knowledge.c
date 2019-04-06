@@ -203,62 +203,94 @@ int knowledge_read(FILE *f) {
 
 	char line[MAX_INPUT];
 	char delim[] = "=";
-	int intentFlag = 0;
+	int INTENT_FLAG = 0;
 	char name[MAX_INPUT], value[MAX_INPUT];
 	int linecount = 0;
 
 	while (fgets(line, sizeof line, f) != NULL) /* read a line */ {
-		// fputs ( line, stdout ); /* write the line */
+
+		int ERROR_FLAG = 1;
+		
 		line[strcspn(line, "\n")] = 0;// Remove trailing newline
 
-		if (strcmp("[what]", line) == 0) {
-			intentFlag = 1;// Indicate it is reading lines under the intent [What]
+		if (strcmp("[what]", line) == 0 || strcmp("[What]", line) == 0) {
+			INTENT_FLAG = 1;// Indicate it is reading lines under the intent [What]
 			continue;
 		}
-		if (strcmp("[where]", line) == 0) {
-			intentFlag = 2;// Indicate it is reading lines under the intent [Where]
+		if (strcmp("[where]", line) == 0 || strcmp("[Where]", line) == 0) {
+			INTENT_FLAG = 2;// Indicate it is reading lines under the intent [Where]
 			continue;
 		}
-		if (strcmp("[who]", line) == 0) {
-			intentFlag = 3;// Indicate it is reading lines under the intent [Who]
+		if (strcmp("[who]", line) == 0 || strcmp("[Who]", line) == 0) {
+			INTENT_FLAG = 3;// Indicate it is reading lines under the intent [Who]
 			continue;
 		}
-		char* ptr = strtok(line, delim);
-		if (ptr != NULL) {// If its a line with "="
-			strcpy(name, ptr);// Copy first part of string as name
-			strcpy(value, strtok(NULL, delim));// Copy second part of string as value
 
-			if (intentFlag == 1) {
-				EntityNode* head = EntityCreate_node((char*)name, value);
-				if (what_intent->next == NULL) {
-					what_intent->next = head;
-				}
-				else {
-					Entity_insert_at_tail(what_intent->next, head);
-				}
-				linecount += 1;
-			}
-			else if (intentFlag == 2) {
-				EntityNode* head = EntityCreate_node((char*)name, value);
-				if (where_intent->next == NULL) {
-					where_intent->next = head;
-				}
-				else {
-					Entity_insert_at_tail(where_intent->next, head);
-				}
-				linecount += 1;
-			}
-			else if (intentFlag == 3) {
-				EntityNode* head = EntityCreate_node((char*)name, value);
-				if (who_intent->next == NULL) {
-					who_intent->next = head;
-				}
-				else {
-					Entity_insert_at_tail(who_intent->next, head);
-				}
-				linecount += 1;
+		// Checks if the delimiter '=' exists in line
+		for (int i = 0; i < strlen(line); i++) {
+			if (line[i] == '=') {
+				ERROR_FLAG = 0;
 			}
 		}
+
+		if (strcmp("", line) == 0) {// Check if
+			ERROR_FLAG = 0;
+		}
+
+		if (ERROR_FLAG == 1) {// Check if ERROR_FLAG is 1 (if delimiter does not exist in line)
+			return -1; // Returns -1 (num_of_lines in chatbot.c)
+		}
+
+		char* ptr = strtok(line, delim);// Separate line by the delimiter '='
+		if ((strtok(NULL, delim) != NULL) && (ptr != NULL)){
+			if (!((strcmp(" ", ptr) == 0)  || (strcmp(" ", strtok(NULL, delim)) == 0))) {// If its a line with "="
+
+			//if ((strcmp(" ", name) == 0) || (name == null) || (strcmp(" ", value) == 0) || (value == null)) {// check if there are invalid names/values
+			//	return -1;// returns -1 (num_of_lines in chatbot.c)
+			//}
+
+				strcpy(name, ptr);// Copy first part of string as name
+				strcpy(value, strtok(NULL, delim));// Copy second part of string as value
+
+				if (INTENT_FLAG == 1) {// If the knowledge is under the [what] intent, append under what_intent node 
+					EntityNode* head = EntityCreate_node((char*)name, value);
+					if (what_intent->next == NULL) {
+						what_intent->next = head;
+					}
+					else {
+						Entity_insert_at_tail(what_intent->next, head);
+					}
+					linecount += 1;
+				}
+				else if (INTENT_FLAG == 2) {// If the knowledge is under the [where] intent, append under where_intent node
+					EntityNode* head = EntityCreate_node((char*)name, value);
+					if (where_intent->next == NULL) {
+						where_intent->next = head;
+					}
+					else {
+						Entity_insert_at_tail(where_intent->next, head);
+					}
+					linecount += 1;
+				}
+				else if (INTENT_FLAG == 3) {// If the knowledge is under the [who] intent, append under who_intent node
+					EntityNode* head = EntityCreate_node((char*)name, value);
+					if (who_intent->next == NULL) {
+						who_intent->next = head;
+					}
+					else {
+						Entity_insert_at_tail(who_intent->next, head);
+					}
+					linecount += 1;
+				}
+			}
+			else {
+				return -1;
+			}
+		}
+		else {
+			return -1;
+		}
+		
 
 	}
 
@@ -399,7 +431,7 @@ void init_intentnodes() {
         exit(1);
     }
     where_intent->intent_name = calloc(6, sizeof(char)); //got to malloc the string pointer first
-    strncpy(where_intent->intent_name, "Where", sizeof(char) * 6);
+    strncpy(where_intent->intent_name, "where", sizeof(char) * 6);
     where_intent->next = NULL;
 
     //init of what intent
@@ -409,7 +441,7 @@ void init_intentnodes() {
         exit(1);
     }
     what_intent->intent_name = calloc(5, sizeof(char)); //got to malloc the string pointer first
-    strncpy(what_intent->intent_name, "What", sizeof(char) * 5);
+    strncpy(what_intent->intent_name, "what", sizeof(char) * 5);
     what_intent->next = NULL;
 
     //init of who intent
@@ -419,7 +451,7 @@ void init_intentnodes() {
         exit(1);
     }
     who_intent->intent_name = calloc(4, sizeof(char)); //got to malloc the string pointer first
-    strncpy(who_intent->intent_name, "Who", sizeof(char) * 4);
+    strncpy(who_intent->intent_name, "who", sizeof(char) * 4);
     who_intent->next = NULL;
 
 // testing purpose only
