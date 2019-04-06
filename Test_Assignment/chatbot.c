@@ -179,6 +179,81 @@ int chatbot_is_load(const char *intent) {
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 
 	/* to be implemented */
+	// int inc = number of words in user input = FILENAME
+	// char *inv[] = pointers to the beginning of each word of input = pointer to FILENAME
+	// char *response = buffer to receive the response = for printing out result
+	// int n = the maximum number of characters to write to the response buffer
+
+	FILE* fptr;
+	char line[MAX_INPUT];
+	char delim[] = "=";
+	int intentFlag = 0;
+	char name[MAX_INPUT], value[MAX_INPUT];
+	int lenIn, lenEn;
+
+	if ((fptr = fopen("../ICT1002_Assignment2_2019_Tri2_Sample.ini", "r")) == NULL) {
+		printf("Error opening file");
+		// Program exits if the file pointer returns NULL.
+		exit(1);
+	}
+
+	while (fgets(line, sizeof line, fptr) != NULL) /* read a line */ {
+		// fputs ( line, stdout ); /* write the line */
+		line[strcspn(line, "\n")] = 0;// Remove trailing newline
+
+		if (strcmp("[what]", line) == 0) {
+			intentFlag = 1;// Indicate it is reading lines under the intent [What]
+			continue;
+		}
+		if (strcmp("[where]", line) == 0) {
+			intentFlag = 2;// Indicate it is reading lines under the intent [Where]
+			continue;
+		}
+		if (strcmp("[who]", line) == 0) {
+			intentFlag = 3;// Indicate it is reading lines under the intent [Who]
+			continue;
+		}
+		char* ptr = strtok(line, delim);
+		if (ptr != NULL) {// If its a line with "="
+			strcpy(name, ptr);// Copy first part of string as name
+			// lenIn = strlen(name);
+			strcpy(value, strtok(NULL, delim));// Copy second part of string as value
+			// lenEn = strlen(value);
+
+			if (intentFlag == 1) {
+				EntityNode* head = EntityCreate_node((char*)name, value);
+				if (what_intent->next == NULL) {
+					what_intent->next = head;
+				}
+				else {
+					Entity_insert_at_tail(what_intent->next, head);
+				}
+				// return KB_OK;
+			}
+			else if (intentFlag == 2) {
+				EntityNode* head = EntityCreate_node((char*)name, value);
+				if (where_intent->next == NULL) {
+					where_intent->next = head;
+				}
+				else {
+					Entity_insert_at_tail(where_intent->next, head);
+				}
+				// return KB_OK;
+			}
+			else if (intentFlag == 3) {
+				EntityNode* head = EntityCreate_node((char*)name, value);
+				if (who_intent->next == NULL) {
+					who_intent->next = head;
+				}
+				else {
+					Entity_insert_at_tail(who_intent->next, head);
+				}
+				// return KB_OK;
+			}
+		}
+
+	}
+
 
 	return 0;
 
