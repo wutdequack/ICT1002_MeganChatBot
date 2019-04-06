@@ -179,79 +179,14 @@ int chatbot_is_load(const char *intent) {
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 
 	/* to be implemented */
-	// int inc = number of words in user input = FILENAME
-	// char *inv[] = pointers to the beginning of each word of input = pointer to FILENAME
-	// char *response = buffer to receive the response = for printing out result
-	// int n = the maximum number of characters to write to the response buffer
 
 	FILE* fptr;
-	char line[MAX_INPUT];
-	char delim[] = "=";
-	int intentFlag = 0;
-	char name[MAX_INPUT], value[MAX_INPUT];
-	int lenIn, lenEn;
 
-	if ((fptr = fopen("../ICT1002_Assignment2_2019_Tri2_Sample.ini", "r")) == NULL) {
-		printf("Error opening file");
-		// Program exits if the file pointer returns NULL.
-		exit(1);
+	if ((fptr = fopen(inv[1], "r")) == NULL) {
+		snprintf(response, n, "%s not found please try again!", inv[1]);
 	}
-
-	while (fgets(line, sizeof line, fptr) != NULL) /* read a line */ {
-		// fputs ( line, stdout ); /* write the line */
-		line[strcspn(line, "\n")] = 0;// Remove trailing newline
-
-		if (strcmp("[what]", line) == 0) {
-			intentFlag = 1;// Indicate it is reading lines under the intent [What]
-			continue;
-		}
-		if (strcmp("[where]", line) == 0) {
-			intentFlag = 2;// Indicate it is reading lines under the intent [Where]
-			continue;
-		}
-		if (strcmp("[who]", line) == 0) {
-			intentFlag = 3;// Indicate it is reading lines under the intent [Who]
-			continue;
-		}
-		char* ptr = strtok(line, delim);
-		if (ptr != NULL) {// If its a line with "="
-			strcpy(name, ptr);// Copy first part of string as name
-			// lenIn = strlen(name);
-			strcpy(value, strtok(NULL, delim));// Copy second part of string as value
-			// lenEn = strlen(value);
-
-			if (intentFlag == 1) {
-				EntityNode* head = EntityCreate_node((char*)name, value);
-				if (what_intent->next == NULL) {
-					what_intent->next = head;
-				}
-				else {
-					Entity_insert_at_tail(what_intent->next, head);
-				}
-				// return KB_OK;
-			}
-			else if (intentFlag == 2) {
-				EntityNode* head = EntityCreate_node((char*)name, value);
-				if (where_intent->next == NULL) {
-					where_intent->next = head;
-				}
-				else {
-					Entity_insert_at_tail(where_intent->next, head);
-				}
-				// return KB_OK;
-			}
-			else if (intentFlag == 3) {
-				EntityNode* head = EntityCreate_node((char*)name, value);
-				if (who_intent->next == NULL) {
-					who_intent->next = head;
-				}
-				else {
-					Entity_insert_at_tail(who_intent->next, head);
-				}
-				// return KB_OK;
-			}
-		}
-
+	else { //if file can be found
+		snprintf(response, n, "Read %d responses from %s", knowledge_read(fptr), inv[1]);
 	}
 
 
@@ -430,63 +365,7 @@ int chatbot_is_reset(const char *intent) {
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
 
-	/* to be implemented */
-	if (where_intent != NULL) {
-		if (where_intent->next != NULL) {
-			EntityNode *head = where_intent->next;
-			EntityNode *temp = head;
-			printf("resetting where\n");
-			while (temp != NULL) {
-				temp = temp->next;
-				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
-				free(head->entity_name);
-				free(head->answer);
-				free(head);
-				head = temp;
-
-			}
-			where_intent->next = NULL;
-		}
-
-	}
-	/* Checks if user has asked any what questions and frees all the questions and answers */
-	if (what_intent != NULL) {
-		if (what_intent->next != NULL) {
-			EntityNode *head = what_intent->next;
-			EntityNode *temp = head;
-			printf("resetting what\n");
-			while (head != NULL) {
-				temp = temp->next;
-				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
-				free(head->entity_name);
-				free(head->answer);
-				free(head);
-				head = temp;
-			}
-			what_intent->next = NULL;
-		}
-
-	}
-	/* Checks if user has asked any who questions and frees all the questions and answers */
-	if (who_intent != NULL) {
-		if (who_intent->next != NULL) {
-			EntityNode *head = who_intent->next;
-			EntityNode *temp = head;
-			printf("resetting who\n");
-			while (temp != NULL) {
-				temp = temp->next;
-				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
-				free(head->entity_name);
-				free(head->answer);
-				free(head);
-				head = temp;
-			}
-			who_intent->next = NULL;
-		}
-
-	}
-
-
+	knowledge_reset();
 	// Return print statement
 	snprintf(response, n, "%s resetted!", chatbot_botname());
 
@@ -545,16 +424,20 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 		strcpy(filename, inv[1]);
 	}
 
-	f = fopen(filename, "w");
-	if (f == NULL) {
-		snprintf(response, n, "Error opening file");
+	if (what_intent->next != NULL || who_intent->next != NULL || where_intent->next != NULL) {
+		f = fopen(filename, "w");
+		if (f == NULL) {
+			snprintf(response, n, "Error opening file");
+			return 0;
+		}
+		knowledge_write(f);
+		snprintf(response, n, "My knowledge has been saved to %s", filename);
+		fclose(f);
+	}
+	else {
+		snprintf(response, n, "Knowledge base is empty! Please try again!");
 		return 0;
 	}
-
-	knowledge_write(f);
-	snprintf(response, n, "My knowledge has been saved to %s\n", filename);
-	fclose(f);
-	return 0;
 }
 
 

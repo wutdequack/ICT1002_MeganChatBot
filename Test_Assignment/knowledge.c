@@ -146,9 +146,6 @@ int knowledge_get(const char *intent, char *entity, char *response, int n) {
 int knowledge_put(const char *intent, const char *entity, const char *response, int n) {
 
     /* to be implemented */
-
-
-
     char user_response[MAX_INPUT];
 
     prompt_user(user_response, n, "");
@@ -204,9 +201,68 @@ int knowledge_put(const char *intent, const char *entity, const char *response, 
  */
 int knowledge_read(FILE *f) {
 
-    /* to be implemented */
+	char line[MAX_INPUT];
+	char delim[] = "=";
+	int intentFlag = 0;
+	char name[MAX_INPUT], value[MAX_INPUT];
+	int linecount = 0;
 
-    return 0;
+	while (fgets(line, sizeof line, f) != NULL) /* read a line */ {
+		// fputs ( line, stdout ); /* write the line */
+		line[strcspn(line, "\n")] = 0;// Remove trailing newline
+
+		if (strcmp("[what]", line) == 0) {
+			intentFlag = 1;// Indicate it is reading lines under the intent [What]
+			continue;
+		}
+		if (strcmp("[where]", line) == 0) {
+			intentFlag = 2;// Indicate it is reading lines under the intent [Where]
+			continue;
+		}
+		if (strcmp("[who]", line) == 0) {
+			intentFlag = 3;// Indicate it is reading lines under the intent [Who]
+			continue;
+		}
+		char* ptr = strtok(line, delim);
+		if (ptr != NULL) {// If its a line with "="
+			strcpy(name, ptr);// Copy first part of string as name
+			strcpy(value, strtok(NULL, delim));// Copy second part of string as value
+
+			if (intentFlag == 1) {
+				EntityNode* head = EntityCreate_node((char*)name, value);
+				if (what_intent->next == NULL) {
+					what_intent->next = head;
+				}
+				else {
+					Entity_insert_at_tail(what_intent->next, head);
+				}
+				linecount += 1;
+			}
+			else if (intentFlag == 2) {
+				EntityNode* head = EntityCreate_node((char*)name, value);
+				if (where_intent->next == NULL) {
+					where_intent->next = head;
+				}
+				else {
+					Entity_insert_at_tail(where_intent->next, head);
+				}
+				linecount += 1;
+			}
+			else if (intentFlag == 3) {
+				EntityNode* head = EntityCreate_node((char*)name, value);
+				if (who_intent->next == NULL) {
+					who_intent->next = head;
+				}
+				else {
+					Entity_insert_at_tail(who_intent->next, head);
+				}
+				linecount += 1;
+			}
+		}
+
+	}
+
+    return linecount;
 }
 
 
@@ -215,7 +271,61 @@ int knowledge_read(FILE *f) {
  */
 void knowledge_reset() {
 
-    /* to be implemented */
+	/* to be implemented */
+	if (where_intent != NULL) {
+		if (where_intent->next != NULL) {
+			EntityNode *head = where_intent->next;
+			EntityNode *temp = head;
+			printf("resetting where\n");
+			while (temp != NULL) {
+				temp = temp->next;
+				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
+				free(head->entity_name);
+				free(head->answer);
+				free(head);
+				head = temp;
+
+			}
+			where_intent->next = NULL;
+		}
+
+	}
+	/* Checks if user has asked any what questions and frees all the questions and answers */
+	if (what_intent != NULL) {
+		if (what_intent->next != NULL) {
+			EntityNode *head = what_intent->next;
+			EntityNode *temp = head;
+			printf("resetting what\n");
+			while (head != NULL) {
+				temp = temp->next;
+				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
+				free(head->entity_name);
+				free(head->answer);
+				free(head);
+				head = temp;
+			}
+			what_intent->next = NULL;
+		}
+
+	}
+	/* Checks if user has asked any who questions and frees all the questions and answers */
+	if (who_intent != NULL) {
+		if (who_intent->next != NULL) {
+			EntityNode *head = who_intent->next;
+			EntityNode *temp = head;
+			printf("resetting who\n");
+			while (temp != NULL) {
+				temp = temp->next;
+				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
+				free(head->entity_name);
+				free(head->answer);
+				free(head);
+				head = temp;
+			}
+			who_intent->next = NULL;
+		}
+
+	}
 
 }
 
