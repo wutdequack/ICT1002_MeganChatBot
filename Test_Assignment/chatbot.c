@@ -416,13 +416,27 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 
 	/* to be implemented */
 	char filename[MAX_INPUT];
+	char *token;
+	const char s[2] = ".";
 	FILE * f;
-	
+
 	if (compare_token(inv[1], "as") == 0 || compare_token(inv[1], "to") == 0) {
 		strcpy(filename, inv[2]);
-	} else {
+	}
+	else {
 		strcpy(filename, inv[1]);
 	}
+
+	if (strrchr(filename, '.') != NULL) {
+		if (strrchr(filename, '.') != ".ini") {
+			token = strtok(filename, s);				// gets first token
+			strcpy(filename, strcat(token, ".ini"));	// replaces extension with .ini
+		}
+	}
+	else {
+		strcpy(filename, strcat(filename, ".ini"));		//appends .ini extension to filename
+	}
+
 
 	if (what_intent->next != NULL || who_intent->next != NULL || where_intent->next != NULL) {
 		f = fopen(filename, "w");
