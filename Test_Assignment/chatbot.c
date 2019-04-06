@@ -182,14 +182,9 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 
 	FILE* fptr;
 	int num_of_lines = 0;
-	//if ((fptr = fopen(inv[1], "r")) == NULL) {
-	//	snprintf(response, n, "%s not found please try again!", inv[1]);
-	//}
-	//else { //if file can be found
-	//	snprintf(response, n, "Read %d responses from %s", knowledge_read(fptr), inv[1]);
-	//}
+	
 	if ((fptr = fopen(inv[1], "r")) == NULL) {
-		snprintf(response, n, "%s not found please try again!", inv[1]);
+		snprintf(response, n, "%s not found. Please try again!", inv[1]);
 	}
 	else { //if file can be found
 		num_of_lines = knowledge_read(fptr);

@@ -204,13 +204,13 @@ int knowledge_read(FILE *f) {
 	char line[MAX_INPUT];
 	char delim[] = "=";
 	int INTENT_FLAG = 0;
-	char name[MAX_INPUT], value[MAX_INPUT];
+	char name[MAX_INPUT], value[MAX_INPUT], *tokens[MAX_INPUT];;
 	int linecount = 0;
 
 	while (fgets(line, sizeof line, f) != NULL) /* read a line */ {
 
 		int ERROR_FLAG = 1;
-		
+
 		line[strcspn(line, "\n")] = 0;// Remove trailing newline
 
 		if (strcmp("[what]", line) == 0 || strcmp("[What]", line) == 0) {
@@ -236,62 +236,66 @@ int knowledge_read(FILE *f) {
 		if (strcmp("", line) == 0) {// Check if
 			ERROR_FLAG = 0;
 		}
+		else {
 
-		if (ERROR_FLAG == 1) {// Check if ERROR_FLAG is 1 (if delimiter does not exist in line)
-			return -1; // Returns -1 (num_of_lines in chatbot.c)
-		}
+			if (ERROR_FLAG == 1) {// Check if ERROR_FLAG is 1 (if delimiter does not exist in line)
+				return -1; // Returns -1 (num_of_lines in chatbot.c)
+			}
 
-		char* ptr = strtok(line, delim);// Separate line by the delimiter '='
-		if ((strtok(NULL, delim) != NULL) && (ptr != NULL)){
-			if (!((strcmp(" ", ptr) == 0)  || (strcmp(" ", strtok(NULL, delim)) == 0))) {// If its a line with "="
+			tokens[0] = strtok(line, delim);// Separate line by the delimiter '='
+			tokens[1] = strtok(NULL, delim);
 
-			//if ((strcmp(" ", name) == 0) || (name == null) || (strcmp(" ", value) == 0) || (value == null)) {// check if there are invalid names/values
-			//	return -1;// returns -1 (num_of_lines in chatbot.c)
-			//}
+			if ((tokens[0] != NULL) && (tokens[1] != NULL)) {
+				if (!(strcmp(" ", tokens[0]) == 0 || strcmp(" ", tokens[1]) == 0)) {// If its a line with "="
 
-				strcpy(name, ptr);// Copy first part of string as name
-				strcpy(value, strtok(NULL, delim));// Copy second part of string as value
+				//if ((strcmp(" ", name) == 0) || (name == null) || (strcmp(" ", value) == 0) || (value == null)) {// check if there are invalid names/values
+				//	return -1;// returns -1 (num_of_lines in chatbot.c)
+				//}
 
-				if (INTENT_FLAG == 1) {// If the knowledge is under the [what] intent, append under what_intent node 
-					EntityNode* head = EntityCreate_node((char*)name, value);
-					if (what_intent->next == NULL) {
-						what_intent->next = head;
+					strcpy(name, tokens[0]);// Copy first part of string as name
+					strcpy(value, tokens[1]);// Copy second part of string as value
+
+					if (INTENT_FLAG == 1) {// If the knowledge is under the [what] intent, append under what_intent node 
+						EntityNode* head = EntityCreate_node((char*)name, value);
+						if (what_intent->next == NULL) {
+							what_intent->next = head;
+						}
+						else {
+							Entity_insert_at_tail(what_intent->next, head);
+						}
+						linecount += 1;
 					}
-					else {
-						Entity_insert_at_tail(what_intent->next, head);
+					else if (INTENT_FLAG == 2) {// If the knowledge is under the [where] intent, append under where_intent node
+						EntityNode* head = EntityCreate_node((char*)name, value);
+						if (where_intent->next == NULL) {
+							where_intent->next = head;
+						}
+						else {
+							Entity_insert_at_tail(where_intent->next, head);
+						}
+						linecount += 1;
 					}
-					linecount += 1;
+					else if (INTENT_FLAG == 3) {// If the knowledge is under the [who] intent, append under who_intent node
+						EntityNode* head = EntityCreate_node((char*)name, value);
+						if (who_intent->next == NULL) {
+							who_intent->next = head;
+						}
+						else {
+							Entity_insert_at_tail(who_intent->next, head);
+						}
+						linecount += 1;
+					}
 				}
-				else if (INTENT_FLAG == 2) {// If the knowledge is under the [where] intent, append under where_intent node
-					EntityNode* head = EntityCreate_node((char*)name, value);
-					if (where_intent->next == NULL) {
-						where_intent->next = head;
-					}
-					else {
-						Entity_insert_at_tail(where_intent->next, head);
-					}
-					linecount += 1;
-				}
-				else if (INTENT_FLAG == 3) {// If the knowledge is under the [who] intent, append under who_intent node
-					EntityNode* head = EntityCreate_node((char*)name, value);
-					if (who_intent->next == NULL) {
-						who_intent->next = head;
-					}
-					else {
-						Entity_insert_at_tail(who_intent->next, head);
-					}
-					linecount += 1;
+				else {
+					return -1;
 				}
 			}
 			else {
 				return -1;
 			}
-		}
-		else {
-			return -1;
-		}
-		
 
+
+		}
 	}
 
     return linecount;
