@@ -303,10 +303,8 @@ void knowledge_reset() {
 		if (where_intent->next != NULL) {
 			EntityNode *head = where_intent->next;
 			EntityNode *temp = head;
-			printf("resetting where\n");
 			while (temp != NULL) {
 				temp = temp->next;
-				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
 				free(head->entity_name);
 				free(head->answer);
 				free(head);
@@ -322,10 +320,8 @@ void knowledge_reset() {
 		if (what_intent->next != NULL) {
 			EntityNode *head = what_intent->next;
 			EntityNode *temp = head;
-			printf("resetting what\n");
 			while (head != NULL) {
 				temp = temp->next;
-				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
 				free(head->entity_name);
 				free(head->answer);
 				free(head);
@@ -340,10 +336,8 @@ void knowledge_reset() {
 		if (who_intent->next != NULL) {
 			EntityNode *head = who_intent->next;
 			EntityNode *temp = head;
-			printf("resetting who\n");
 			while (temp != NULL) {
 				temp = temp->next;
-				printf("freeing question %s and answer %s...\n", head->entity_name, head->answer);
 				free(head->entity_name);
 				free(head->answer);
 				free(head);
